@@ -29,6 +29,7 @@ const Post = ({ post }) => {
       <PostImg src={post.imgURL} />
       <PostText>{`좋아요: ${post.starCount}`}</PostText>
       <PostText>{post.postContent}</PostText>
+      <hr></hr>
     </PostBlock>
   );
 };

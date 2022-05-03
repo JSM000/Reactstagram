@@ -1,28 +1,38 @@
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import * as firebaseDB from "../../service/firebaseDB";
+import * as firebaseAuth from "../../service/firebaseAuth";
+import { useDispatch } from "react-redux";
+import { login } from "../../modules/auth";
 
-function Login({ onLogin, onSignin }) {
+function Login(props) {
   const emailRef = useRef();
   const passwordRef = useRef();
   const [isCreateAccount, setIsCreateAccount] = useState(true);
+  const dispatch = useDispatch();
 
+  // 디스패치 선언
+  const onLogin = useCallback((email, password) =>
+    dispatch(login(email, password))
+  );
+
+  //로그인, 회원가입 버튼 전환
   const toggleAccount = () => {
     setIsCreateAccount((prev) => !prev);
   };
 
-  const CreateAccount = (email, password) => {
-    onSignin(email, password);
+  //회원가입 후, 프로필 생성하여 DB에 저장
+  const CreateAccount = async (email, password) => {
+    const result = await firebaseAuth.signin(email, password);
     const profile = {
-      Profile: {
-        Introduce: "",
-        Uid: "",
-        Username: "",
-        Userphoto: "",
-      },
+      Introduce: "",
+      Uid: result.user._delegate.uid,
+      Username: result.user._delegate.email.match(/(.+)@/)[1],
+      Userphoto: "",
     };
-    //firebaseDB.updateDB(ref, data);
+    await firebaseDB.updateDB(`users/${profile.Uid}/Profile`, profile);
   };
 
+  //버튼 클릭 시, isCreateAccount에 따라 로그인 또는 회원가입
   const onSubmit = (e) => {
     e.preventDefault();
     const email = emailRef.current.value;

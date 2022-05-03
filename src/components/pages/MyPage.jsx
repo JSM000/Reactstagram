@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
-import { useParams, useLocation, useNavigate } from "react-router-dom";
+import React from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import * as firebaseAuth from "../../service/firebaseAuth";
 
@@ -23,9 +24,6 @@ const UserZoen = styled.div`
   div {
     color: #000;
   }
-  .asd {
-    color: #000;
-  }
 `;
 
 const UserDataSec = styled.div`
@@ -41,13 +39,16 @@ const ProfileBtn = styled.button`
 `;
 
 const MyPage = (props) => {
-  const params = useParams();
-  const location = useLocation();
-  const navigate = useNavigate();
+  // 전역 Porfile 받아오기
+  const profile = useSelector(({ profileDB }) => profileDB.Profile);
 
+  // 버튼이벤트 - 프로필 편집으로 페이지 이동
+  const navigate = useNavigate();
   const goProfileEdit = () => {
     navigate("/ProfileEdit");
   };
+
+  // 버튼이벤트 - 로그아웃 시키기
   const onLogout = () => {
     try {
       firebaseAuth.logout();
@@ -59,7 +60,11 @@ const MyPage = (props) => {
   return (
     <>
       <ProfileZone>
-        <UserImg />
+        <UserImg
+          src={
+            profile.Userphoto ? profile.Userphoto : "img/default_profile.png"
+          }
+        />
         <UserDataSec>
           <UserDataBlock>게시물 0</UserDataBlock>
           <UserDataBlock>팔로워 0</UserDataBlock>
@@ -67,14 +72,14 @@ const MyPage = (props) => {
         </UserDataSec>
       </ProfileZone>
       <UserZoen>
-        <strong>테리어몬</strong>
-        <div>안녕하세요</div>
-        <div className="asd">반가워요</div>
+        <strong>{profile.Username}</strong>
+        <div>
+          {profile.Introduce ? profile.Introduce : "자기소개를 작성해 주세요."}
+        </div>
       </UserZoen>
       <ProfileBtn onClick={goProfileEdit}>프로필 편집</ProfileBtn>
       <ProfileBtn onClick={onLogout}>로그아웃</ProfileBtn>
     </>
-    //  <button onClick={() => navigate('/')}>홈으로</button>
   );
 };
 

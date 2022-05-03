@@ -1,33 +1,26 @@
 import { handleActions } from "redux-actions";
-import { firebase_db } from "../service/firebaseConfig";
+import * as firebaseDB from "../service/firebaseDB";
 
-const SYNCPROFILE = "auth/SYNCPROFILE";
+const SYNC_PROFILE = "auth/SYNCPROFILE";
 
-export const syncProfile = (userId) => async (dispatch) => {
+export const syncProfile = (uid) => async (dispatch) => {
   try {
-    const dbRef = firebase_db.ref(`users/${userId}/Profile`);
-    dbRef.on("value", (snapshot) => {
-      const data = snapshot.val();
-      dispatch({ SYNCPROFILE, payload: data });
+    const syncOff = firebaseDB.syncDB(`/users/${uid}/Profile`, (data) => {
+      dispatch({ type: SYNC_PROFILE, payload: data });
     });
-    return () => dbRef.off();
+    return syncOff;
   } catch (e) {
     throw e;
   }
 };
 
-const initialState = {
-  Profile: {
-    Introduce: "",
-    Uid: "",
-    Username: "",
-    Userphoto: "",
-  },
-};
+const initialState = {};
 
 const profileDB = handleActions(
   {
-    [SYNCPROFILE]: (state, action) => action.payload,
+    [SYNC_PROFILE]: (state, action) => ({
+      Profile: action.payload,
+    }),
   },
   initialState
 );

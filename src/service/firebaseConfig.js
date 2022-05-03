@@ -16,10 +16,7 @@ const firebaseConfig = {
   storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
 };
 
-// Initialize Firebase
-const fbase = !firebase.apps.length
-  ? firebase.initializeApp(firebaseConfig)
-  : firebase.app();
+!firebase.apps.length ? firebase.initializeApp(firebaseConfig) : firebase.app();
 
 export const firebase_db = firebase.database();
 export const firebaseInstance = firebase;

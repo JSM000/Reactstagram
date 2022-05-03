@@ -3,25 +3,27 @@ import { useDispatch, useSelector } from "react-redux";
 import { Route, Routes } from "react-router-dom";
 import * as firebaseAuth from "./service/firebaseAuth";
 import { goToMain, goToLogin } from "./modules/auth";
+import { syncProfile } from "./modules/profileDB";
 import ReactLoading from "react-loading";
-import LoginContainer from "./containers/LoginContainer";
+import Login from "./components/pages/Login";
 import MainBlock from "./components/MainBlock";
 import Header from "./components/Header";
 import BottomTeb from "./components/Footer";
-// import About from "./components/pages/About";
 import Home from "./components/pages/Home";
-// import Profiles from "./components/pages/Profiles";
 import MyPage from "./components/pages/MyPage";
-// import ProfileEdit from "./components/pages/ProfileEdit";
 import Upload from "./components/pages/Upload";
+// import About from "./components/pages/About";
+// import Profiles from "./components/pages/Profiles";
+// import ProfileEdit from "./components/pages/ProfileEdit";
 
 const App = () => {
+  const dispatch = useDispatch();
+
+  //전역변수 loading, isLogin관리
   const { loading, isLogin } = useSelector(({ auth }) => ({
     loading: auth.loading,
     isLogin: auth.isLogin,
   }));
-
-  const dispatch = useDispatch();
   const onGoToMain = useCallback(() => {
     dispatch(goToMain());
   });
@@ -29,16 +31,27 @@ const App = () => {
     dispatch(goToLogin());
   });
 
+  //전역 값 Profile 관리
+  const onSyncProfile = useCallback((uid) => {
+    dispatch(syncProfile(uid));
+  });
+
+  //웹 접속시
+  // 1. 로그인 여부 파악하여 로그인, 메인 페이지 전환
+  // 2. DB에서 해당 UID의 Profile 받아와서 전역 state에 저장
   useEffect(() => {
-    firebaseAuth.onAuthChanged((user) => {
+    firebaseAuth.onAuthChanged(async (user) => {
+      user && (await onSyncProfile(user.uid));
       user ? onGoToMain() : onGoToLogin();
     });
   }, [firebaseAuth]);
 
+  console.log();
+
   return loading ? (
     <ReactLoading type="spin" color="black" width="50%" height="50%" />
   ) : !isLogin ? (
-    <LoginContainer></LoginContainer>
+    <Login></Login>
   ) : (
     <MainBlock>
       <Header></Header>
@@ -57,42 +70,6 @@ const App = () => {
       <BottomTeb></BottomTeb>
     </MainBlock>
   );
-
-  // const [ready, setReady] = useState();
-  // console.log(ready);
-
-  // const handleLogout = () => {
-  //   setReady(true);
-  //   console.log(ready);
-  // };
-
-  // return ready ? (
-  //   <TodoProvider>
-  //     <Login setReady={setReady} ready={ready} />
-  //   </TodoProvider>
-  // ) : (
-  //   <TodoProvider>
-  //     <MainBlock>
-  //       <Header></Header>
-  //       <Routes>
-  //         <Route path="/" element={<Home />} />
-  //         <Route path="/about" element={<About />} />
-  //         <Route path="/Profiles/*" element={<Profiles />} />
-  //         <Route path="/Upload" element={<Upload />} />
-  //         <Route
-  //           path="/MyPage"
-  //           element={<MyPage handleLogout={handleLogout} />}
-  //         />
-  //         <Route path="/ProfileEdit" element={<ProfileEdit />} />
-  //         <Route
-  //           path="/*"
-  //           element={<h1>이 페이지는 존재하지 않습니다. - </h1>}
-  //         />
-  //       </Routes>
-  //       <BottomTeb></BottomTeb>
-  //     </MainBlock>
-  //   </TodoProvider>
-  // );
 };
 
 export default React.memo(App);

@@ -10,6 +10,8 @@ export const updateDB = async (ref, data) => {
     const newPostKey = firebase_db.ref().child(ref).push().key;
     data["postKey"] = newPostKey;
     updates[`/${ref}/` + newPostKey] = data;
+  } else {
+    updates[ref] = data;
   }
   await firebase_db.ref().update(updates);
 };

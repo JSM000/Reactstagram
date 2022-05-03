@@ -1,8 +1,8 @@
-import React, { useRef, useEffect, useState } from "react";
-import * as firebaseAuth from "../../service/firebaseAuth";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import ReactLoading from "react-loading";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import * as firebaseDB from "../../service/firebaseDB";
 import * as firebaseStorage from "../../service/firebaseStorage";
 
@@ -35,20 +35,23 @@ const LoadingContainer = styled.div`
   justify-content: center;
   align-items: center;
 `;
+
 function Upload() {
+  const navigate = useNavigate();
   const fileInputRef = useRef();
   const previewRef = useRef();
   const postContentRef = useRef();
   const [file, setFile] = useState({});
-  const [uid, setUid] = useState();
   const [loading, setloading] = useState(false);
-  const navigate = useNavigate();
+  const uid = useSelector(({ profileDB }) => profileDB.Profile.Uid);
 
+  //버튼 클릭 후 이미지 파일 열면,
+  // 1. 이미지 미리보기로 보여주기
+  // 2. 이미지 파일 useState로 저장해두기
   const onFileInputBtnClick = (e) => {
     e.preventDefault();
     fileInputRef.current.click();
   };
-
   const onFileChange = (e) => {
     const reader = new FileReader();
     const newfile = e.target.files[0];
@@ -59,6 +62,10 @@ function Upload() {
     setFile(newfile);
   };
 
+  //제출버튼 클립하면,
+  // 1. 로딩 표시
+  // 2. 전체 포스트에 저장 / 현재 유저의 포스트에 저장
+  // 3. 홈으로 페이지 이동
   const onSubmitBtnClick = async (e) => {
     setloading(true);
     try {
@@ -70,18 +77,13 @@ function Upload() {
         uid: uid,
         userName: "정승민",
       };
-      firebaseDB.updateDB("posts", postData);
+      await firebaseDB.updateDB("posts", postData);
+      await firebaseDB.updateDB(`users/${uid}/Posts`, postData);
       navigate("/");
     } catch (e) {
       throw e;
     }
   };
-
-  useEffect(() => {
-    firebaseAuth.onAuthChanged((user) => {
-      setUid(user.uid);
-    });
-  }, [firebaseAuth]);
 
   return (
     <>
