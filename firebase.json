@@ -1,0 +1,11 @@
+{
+  "hosting": {
+    "public": "build",
+    "site": "reactstagram-83256",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
