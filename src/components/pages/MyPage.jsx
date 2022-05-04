@@ -62,7 +62,7 @@ const MyPage = (props) => {
       <ProfileZone>
         <UserImg
           src={
-            profile.Userphoto ? profile.Userphoto : "img/default_profile.png"
+            profile.Userphoto ? profile.Userphoto : "images/default_profile.png"
           }
         />
         <UserDataSec>

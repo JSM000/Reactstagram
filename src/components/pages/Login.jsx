@@ -9,6 +9,7 @@ function Login(props) {
   const passwordRef = useRef();
   const [isCreateAccount, setIsCreateAccount] = useState(true);
   const dispatch = useDispatch();
+  console.log(`isCreateAccount: ${isCreateAccount}`);
 
   // 디스패치 선언
   const onLogin = useCallback((email, password) =>
@@ -22,6 +23,7 @@ function Login(props) {
 
   //회원가입 후, 프로필 생성하여 DB에 저장
   const CreateAccount = async (email, password) => {
+    console.log("회원가입 실행됨");
     const result = await firebaseAuth.signin(email, password);
     const profile = {
       Introduce: "",
@@ -32,15 +34,18 @@ function Login(props) {
     await firebaseDB.updateDB(`users/${profile.Uid}/Profile`, profile);
   };
 
+  const asd = (email, password) => {
+    console.log("로그인 실행됨");
+    onLogin(email, password);
+  };
+
   //버튼 클릭 시, isCreateAccount에 따라 로그인 또는 회원가입
   const onSubmit = (e) => {
     e.preventDefault();
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
     try {
-      isCreateAccount
-        ? CreateAccount(email, password)
-        : onLogin(email, password);
+      isCreateAccount ? CreateAccount(email, password) : asd(email, password);
     } catch (e) {
       throw e;
     }

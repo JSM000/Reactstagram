@@ -9,7 +9,7 @@ const GOTOLOGIN = "auth/GOTOLOGIN";
 
 export const login = (email, password) => async (dispatch) => {
   try {
-    await firebaseAuth.signin(email, password);
+    await firebaseAuth.login(email, password);
     dispatch({
       type: LOGIN_SUCCESS,
     });
