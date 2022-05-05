@@ -62,7 +62,9 @@ const MyPage = (props) => {
       <ProfileZone>
         <UserImg
           src={
-            profile.Userphoto ? profile.Userphoto : "images/default_profile.png"
+            profile.UserImgURL
+              ? profile.UserImgURL
+              : "images/default_profile.png"
           }
         />
         <UserDataSec>
@@ -72,10 +74,8 @@ const MyPage = (props) => {
         </UserDataSec>
       </ProfileZone>
       <UserZoen>
-        <strong>{profile.Username}</strong>
-        <div>
-          {profile.Introduce ? profile.Introduce : "자기소개를 작성해 주세요."}
-        </div>
+        <strong>{profile.UserName}</strong>
+        <div>{profile.Introduce && profile.Introduce}</div>
       </UserZoen>
       <ProfileBtn onClick={goProfileEdit}>프로필 편집</ProfileBtn>
       <ProfileBtn onClick={onLogout}>로그아웃</ProfileBtn>

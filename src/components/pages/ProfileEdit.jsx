@@ -1,12 +1,28 @@
 import React, { useRef, useCallback, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
-import useInputs from "../innerComponents/useInputs";
+import ReactLoading from "react-loading";
 import styled from "styled-components";
-import * as firebaseDB from "../../service/firebaseDB";
 import * as firebaseStorage from "../../service/firebaseStorage";
-
+import { updateProfile } from "../../modules/profileDB";
+import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
+const TopBtns = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.5rem;
+  margin-bottom: 30px;
+`;
+const Title = styled.div`
+  margin-right: 150px;
+  font-weight: bolder;
+  font-size: 1rem;
+`;
+const SubmitBtn = styled.button`
+  background: none;
+  border: none;
+`;
 const UploadContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -15,16 +31,25 @@ const UploadContainer = styled.div`
   margin: 20px;
 `;
 const FileInputButton = styled.button`
-  cursor: pointer;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 300px;
-  height: 200px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-weight: bolder;
+  color: #0095f6;
+`;
+const UserImg = styled.img`
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
   padding: 10px;
-  &: active {
-    opacity: 0.5;
-  }
+`;
+const InputBox = styled.input`
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid black;
+  margin: 10px;
 `;
 const LoadingContainer = styled.div`
   width: 100%;
@@ -41,11 +66,17 @@ const ProfileEdit = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef();
   const previewRef = useRef();
-  const postContentRef = useRef();
+  const introduceRef = useRef();
+  const userNameRef = useRef();
   const [file, setFile] = useState({});
   const [loading, setloading] = useState(false);
-  const uid = useSelector(({ profileDB }) => profileDB.Profile.Uid);
 
+  // 전역값 받아오기
+  const uid = useSelector(({ profileDB }) => profileDB.Profile.Uid);
+  const dispatch = useDispatch();
+  const onUpdateProfile = useCallback((ref, profile) =>
+    dispatch(updateProfile(ref, profile))
+  );
   //버튼 클릭 후 이미지 파일 열면,
   // 1. 이미지 미리보기로 보여주기
   // 2. 이미지 파일 useState로 저장해두기
@@ -65,57 +96,61 @@ const ProfileEdit = () => {
 
   //제출버튼 클립하면,
   // 1. 로딩 표시
-  // 2. 전체 포스트에 저장 / 현재 유저의 포스트에 저장
-  // 3. 홈으로 페이지 이동
-  const onSubmitBtnClick = async (e) => {
+  // 2. 이미지 스토리지에 저장
+  // 2. 프로필 DB에 저장, 전역에 저장
+  // 3. 프로필로 페이지 이동
+  const onSubmitBtnClick = async () => {
     setloading(true);
     try {
-      const url = await firebaseStorage.putStorage(file);
-      const postData = {
-        postContent: postContentRef.current.value,
-        imgURL: url,
-        starCount: 0,
-        uid: uid,
-        userName: "정승민",
+      const url = await firebaseStorage.putStorage("ProfileImg", file);
+      const profile = {
+        Introduce: introduceRef.current.value,
+        Uid: uid,
+        UserImgURL: url,
+        UserName: userNameRef.current.value,
       };
-      await firebaseDB.updateDB("posts", postData);
-      await firebaseDB.updateDB(`users/${uid}/Posts`, postData);
-      navigate("/");
+      await onUpdateProfile(`users/${uid}/Profile`, profile);
+      navigate("/MyPage");
     } catch (e) {
       throw e;
     }
   };
 
-  const [{ username, text }, onChange, reset] = useInputs({
-    username: "",
-    text: "",
-  });
-  const nextId = useRef(4);
   return (
-    <UploadContainer>
-      <FileInputButton onClick={onFileInputBtnClick}>
-        프로필 사진{" "}
-        <img
-          ref={previewRef}
-          src="images/default_profile.png"
-          style={{ height: "150px" }}
-        ></img>
-      </FileInputButton>
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={onFileChange}
-        style={{ display: "none" }}
-      />
-      <textarea
-        ref={postContentRef}
-        placeholder="자기소개"
-        name="post_content"
-        style={{ width: "300px", height: "150px" }}
-      />
-      <button onClick={onSubmitBtnClick}>등록하기</button>
-    </UploadContainer>
+    <>
+      <UploadContainer>
+        <TopBtns>
+          <AiOutlineClose />
+          <Title>프로필 편집</Title>
+          <SubmitBtn onClick={onSubmitBtnClick}>
+            <AiOutlineCheck style={{ color: "#0095f6" }} />
+          </SubmitBtn>
+        </TopBtns>
+        <FileInputButton onClick={onFileInputBtnClick}>
+          <UserImg ref={previewRef} src="images/default_profile.png" />
+          프로필 사진 변경
+        </FileInputButton>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={onFileChange}
+          style={{ display: "none" }}
+        />
+        <InputBox ref={userNameRef} type="text" placeholder="이름" />
+        <InputBox ref={introduceRef} placeholder="소개" name="post_content" />
+      </UploadContainer>
+      {loading && (
+        <LoadingContainer>
+          <ReactLoading
+            type="spin"
+            color="white"
+            width="200px"
+            height="200px"
+          />
+        </LoadingContainer>
+      )}
+    </>
   );
 };
 

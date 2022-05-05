@@ -28,8 +28,8 @@ function Login(props) {
     const profile = {
       Introduce: "",
       Uid: result.user._delegate.uid,
-      Username: result.user._delegate.email.match(/(.+)@/)[1],
-      Userphoto: "",
+      UserName: result.user._delegate.email.match(/(.+)@/)[1],
+      UserImgURL: "",
     };
     await firebaseDB.updateDB(`users/${profile.Uid}/Profile`, profile);
   };

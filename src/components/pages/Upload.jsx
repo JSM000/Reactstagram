@@ -66,10 +66,10 @@ function Upload() {
   // 1. 로딩 표시
   // 2. 전체 포스트에 저장 / 현재 유저의 포스트에 저장
   // 3. 홈으로 페이지 이동
-  const onSubmitBtnClick = async (e) => {
+  const onSubmitBtnClick = async () => {
     setloading(true);
     try {
-      const url = await firebaseStorage.putStorage(file);
+      const url = await firebaseStorage.putStorage("PostImg", file);
       const postData = {
         postContent: postContentRef.current.value,
         imgURL: url,
