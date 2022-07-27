@@ -3,12 +3,15 @@ import * as firebaseDB from "../../service/firebaseDB";
 import * as firebaseAuth from "../../service/firebaseAuth";
 import { useDispatch } from "react-redux";
 import { login } from "../../modules/auth";
+import Welcome from "./Welcome";
 
 function Login(props) {
   const emailRef = useRef();
   const passwordRef = useRef();
   const [isCreateAccount, setIsCreateAccount] = useState(true);
   const dispatch = useDispatch();
+  const [backBtn, setBackBtn] = useState(false);
+
   console.log(`isCreateAccount: ${isCreateAccount}`);
 
   // 디스패치 선언
@@ -53,31 +56,35 @@ function Login(props) {
 
   return (
     <>
-      <div>
-        <form onSubmit={onSubmit}>
-          <input
-            ref={emailRef}
-            name="email"
-            type="email"
-            placeholder="Email"
-            required
-          />
-          <input
-            ref={passwordRef}
-            name="password"
-            type="password"
-            placeholder="password"
-            required
-          />
-          <input
-            type="submit"
-            value={isCreateAccount ? "Create Account" : "Login"}
-          />
-        </form>
-        <span onClick={toggleAccount}>
-          {isCreateAccount ? "Login" : "Craete Account"}
-        </span>
-      </div>
+      {backBtn && <Welcome></Welcome>}
+      {!backBtn && (
+        <div>
+          <form onSubmit={onSubmit}>
+            <input
+              ref={emailRef}
+              name="email"
+              type="email"
+              placeholder="Email"
+              required
+            />
+            <input
+              ref={passwordRef}
+              name="password"
+              type="password"
+              placeholder="password"
+              required
+            />
+            <input
+              type="submit"
+              value={isCreateAccount ? "Create Account" : "Login"}
+            />
+          </form>
+          <span onClick={toggleAccount}>
+            {isCreateAccount ? "Login" : "Craete Account"}
+          </span>
+          <button onClick={() => setBackBtn(true)}>뒤로가기</button>
+        </div>
+      )}
     </>
   );
 }

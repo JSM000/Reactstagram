@@ -5,7 +5,6 @@ import * as firebaseAuth from "./service/firebaseAuth";
 import { goToMain, goToLogin, logout } from "./modules/auth";
 import { syncProfile } from "./modules/profileDB";
 import ReactLoading from "react-loading";
-import Login from "./components/pages/Login";
 import MainBlock from "./components/MainBlock";
 import Header from "./components/Header";
 import BottomTeb from "./components/Footer";
@@ -15,6 +14,8 @@ import Upload from "./components/pages/Upload";
 // import About from "./components/pages/About";
 // import Profiles from "./components/pages/Profiles";
 import ProfileEdit from "./components/pages/ProfileEdit";
+import Welcome from "./components/pages/Welcome";
+import "./App.css";
 
 const App = () => {
   //dispatch(logout());
@@ -58,12 +59,13 @@ const App = () => {
   return loading ? (
     <ReactLoading type="spin" color="black" width="50%" height="50%" />
   ) : !isLogin ? (
-    <Login></Login>
+    <Welcome></Welcome>
   ) : (
     <MainBlock>
       <Header></Header>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Welcome />} />
+        <Route path="/Home" element={<Home />} />
         {/* <Route path="/about" element={<About />} />
         <Route path="/Profiles/*" element={<Profiles />} /> */}
         <Route path="/Upload" element={<Upload />} />

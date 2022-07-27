@@ -41,7 +41,7 @@ function Footer() {
     <>
       <BottomTebBlock>
         <Text>
-          <Link to="/">
+          <Link to="/Home">
             <MdHome></MdHome>
           </Link>
         </Text>

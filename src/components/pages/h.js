@@ -1,17 +1,17 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 function HistorySample() {
-   const navigate = useNavigate();
-   const goBack = () => {
-   const confirm = window.confirm('편집을 완료하셨습니까?')
-   if (confirm) {
+  const navigate = useNavigate();
+  const goBack = () => {
+    const confirm = window.confirm("편집을 완료하셨습니까?");
+    if (confirm) {
       navigate(-1);
     }
   };
 
-const goHome = () => {
-    navigate('/');
-  }
+  const goHome = () => {
+    navigate("/Home");
+  };
   return (
     <div>
       <button onClick={goBack}>뒤로가기</button>
