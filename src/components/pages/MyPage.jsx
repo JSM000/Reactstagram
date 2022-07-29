@@ -4,6 +4,13 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import * as firebaseAuth from "../../service/firebaseAuth";
 
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+`;
+
 const ProfileZone = styled.div`
   width: 100%;
   height: 100px;
@@ -17,6 +24,7 @@ const UserImg = styled.img`
   padding: 10px;
 `;
 const UserZoen = styled.div`
+  width: 100%;
   padding: 10px;
   strong {
     font-size: 20px;
@@ -33,9 +41,26 @@ const UserDataBlock = styled.p`
   margin: 10px;
   font-weight: bold;
 `;
-const ProfileBtn = styled.button`
-  width: 100%;
-  background-color: #fff;
+
+const EditBtn = styled.button`
+  width: 350px;
+  padding: 10px 0px;
+  color: white;
+  font-weight: bold;
+  background-color: #0095f6;
+  margin: 5px;
+  border: none;
+  border-radius: 10px;
+`;
+const LogoutBtn = styled.button`
+  background-color: white;
+  width: 350px;
+  padding: 10px 0px;
+  font-weight: bold;
+  margin: 5px;
+  border: none;
+  border-radius: 10px;
+  color: #0095f6;
 `;
 
 const MyPage = (props) => {
@@ -58,7 +83,7 @@ const MyPage = (props) => {
   };
 
   return (
-    <>
+    <Container>
       <ProfileZone>
         <UserImg
           src={
@@ -77,9 +102,9 @@ const MyPage = (props) => {
         <strong>{profile.UserName}</strong>
         <div>{profile.Introduce && profile.Introduce}</div>
       </UserZoen>
-      <ProfileBtn onClick={goProfileEdit}>프로필 편집</ProfileBtn>
-      <ProfileBtn onClick={onLogout}>로그아웃</ProfileBtn>
-    </>
+      <EditBtn onClick={goProfileEdit}>프로필 편집</EditBtn>
+      <LogoutBtn onClick={onLogout}>로그아웃</LogoutBtn>
+    </Container>
   );
 };
 

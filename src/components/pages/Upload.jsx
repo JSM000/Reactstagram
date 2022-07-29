@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import ReactLoading from "react-loading";
+import Loading from "./Loading";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import * as firebaseDB from "../../service/firebaseDB";
@@ -18,22 +18,41 @@ const FileInputButton = styled.button`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 300px;
+  width: 350px;
   height: 200px;
   padding: 10px;
-  &: active {
-    opacity: 0.5;
-  }
+  border-radius: 10px;
+  background-color: #eaeaeaea;
+  border: 3px solid #a1a1a1a1;
 `;
-const LoadingContainer = styled.div`
-  width: 100%;
+const Textarea = styled.textarea`
+  margin: 15px;
+  border-radius: 10px;
+  width: 350px;
+  height: 150px;
+  text-align: center;
+`;
+const Img = styled.img`
   height: 100%;
-  background: black;
+`;
+
+const LoadingContainer = styled.div`
+  width: 100vw;
+  height: 100vh;
+  background: grey;
   position: absolute;
-  opacity: 0.5;
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+const UploadBtn = styled.button`
+  width: 350px;
+  padding: 10px 0px;
+  color: white;
+  font-weight: bold;
+  background-color: #0095f6;
+  border: none;
+  border-radius: 10px;
 `;
 
 function Upload() {
@@ -41,7 +60,7 @@ function Upload() {
   const fileInputRef = useRef();
   const previewRef = useRef();
   const postContentRef = useRef();
-  const [file, setFile] = useState({});
+  const [file, setFile] = useState();
   const [loading, setloading] = useState(false);
   const uid = useSelector(({ profileDB }) => profileDB.Profile.Uid);
 
@@ -89,8 +108,8 @@ function Upload() {
     <>
       <UploadContainer>
         <FileInputButton onClick={onFileInputBtnClick}>
-          사진넣기
-          <img ref={previewRef} style={{ height: "150px" }}></img>
+          {file ? "" : "사진"}
+          <Img ref={previewRef} />
         </FileInputButton>
         <input
           ref={fileInputRef}
@@ -99,22 +118,12 @@ function Upload() {
           onChange={onFileChange}
           style={{ display: "none" }}
         />
-        <textarea
-          ref={postContentRef}
-          placeholder="내용"
-          name="post_content"
-          style={{ width: "300px", height: "150px" }}
-        />
-        <button onClick={onSubmitBtnClick}>글 올리기</button>
+        <Textarea ref={postContentRef} placeholder="내용" name="post_content" />
+        <UploadBtn onClick={onSubmitBtnClick}>글 올리기</UploadBtn>
       </UploadContainer>
       {loading && (
         <LoadingContainer>
-          <ReactLoading
-            type="spin"
-            color="white"
-            width="200px"
-            height="200px"
-          />
+          <Loading />
         </LoadingContainer>
       )}
     </>

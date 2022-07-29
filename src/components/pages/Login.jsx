@@ -4,25 +4,67 @@ import * as firebaseAuth from "../../service/firebaseAuth";
 import { useDispatch } from "react-redux";
 import { login } from "../../modules/auth";
 import Welcome from "./Welcome";
+import styled from "styled-components";
+import Loading from "./Loading";
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: white;
+`;
+const Title = styled.span`
+  font-size: 4rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  font-family: asd;
+`;
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+`;
+const Input = styled.input`
+  width: 350px;
+  padding: 10px;
+  margin: 5px;
+  border-radius: 10px;
+  background-color: #eaeaeaea;
+  border: 1px solid #a1a1a1a1;
+`;
+const SubmitBtn = styled.button`
+  width: 350px;
+  padding: 10px 0px;
+  color: white;
+  font-weight: bold;
+  background-color: #0095f6;
+  margin: 5px;
+  border: none;
+  border-radius: 10px;
+`;
+const BackBtn = styled.button`
+  background-color: white;
+  width: 350px;
+  padding: 10px 0px;
+  font-weight: bold;
+  margin: 5px;
+  border: none;
+  border-radius: 10px;
+  color: #0095f6;
+`;
 
 function Login(props) {
   const emailRef = useRef();
   const passwordRef = useRef();
-  const [isCreateAccount, setIsCreateAccount] = useState(true);
   const dispatch = useDispatch();
   const [backBtn, setBackBtn] = useState(false);
-
-  console.log(`isCreateAccount: ${isCreateAccount}`);
+  const [loading, setLoading] = useState(false);
 
   // 디스패치 선언
   const onLogin = useCallback((email, password) =>
     dispatch(login(email, password))
   );
-
-  //로그인, 회원가입 버튼 전환
-  const toggleAccount = () => {
-    setIsCreateAccount((prev) => !prev);
-  };
 
   //회원가입 후, 프로필 생성하여 DB에 저장
   const CreateAccount = async (email, password) => {
@@ -37,55 +79,39 @@ function Login(props) {
     await firebaseDB.updateDB(`users/${profile.Uid}/Profile`, profile);
   };
 
-  const asd = (email, password) => {
-    console.log("로그인 실행됨");
-    onLogin(email, password);
-  };
-
-  //버튼 클릭 시, isCreateAccount에 따라 로그인 또는 회원가입
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
     try {
-      isCreateAccount ? CreateAccount(email, password) : asd(email, password);
+      await onLogin(email, password);
     } catch (e) {
+      setLoading(false);
       throw e;
     }
+    setLoading(false);
   };
 
-  return (
-    <>
-      {backBtn && <Welcome></Welcome>}
-      {!backBtn && (
-        <div>
-          <form onSubmit={onSubmit}>
-            <input
-              ref={emailRef}
-              name="email"
-              type="email"
-              placeholder="Email"
-              required
-            />
-            <input
-              ref={passwordRef}
-              name="password"
-              type="password"
-              placeholder="password"
-              required
-            />
-            <input
-              type="submit"
-              value={isCreateAccount ? "Create Account" : "Login"}
-            />
-          </form>
-          <span onClick={toggleAccount}>
-            {isCreateAccount ? "Login" : "Craete Account"}
-          </span>
-          <button onClick={() => setBackBtn(true)}>뒤로가기</button>
-        </div>
-      )}
-    </>
+  return loading ? (
+    <Loading />
+  ) : backBtn ? (
+    <Welcome></Welcome>
+  ) : (
+    <Container>
+      <Title>Reactstaram</Title>
+      <Form onSubmit={onSubmit}>
+        <Input ref={emailRef} type="email" placeholder="이메일 주소" required />
+        <Input
+          ref={passwordRef}
+          type="password"
+          placeholder="비밀번호"
+          required
+        />
+        <SubmitBtn type="submit">로그인</SubmitBtn>
+      </Form>
+      <BackBtn onClick={() => setBackBtn(true)}>{"<<뒤로가기"}</BackBtn>
+    </Container>
   );
 }
 export default Login;

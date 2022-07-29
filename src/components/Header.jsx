@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import { MdFavoriteBorder, MdSend, MdAddCircleOutline } from "react-icons/md";
+import { MdFavoriteBorder, MdSend } from "react-icons/md";
+import { VscDiffAdded } from "react-icons/vsc";
 import { useNavigate } from "react-router-dom";
 
 const HeaderBlock = styled.header`
@@ -20,10 +21,13 @@ const HeaderBlocknone = styled.header`
   width: 100%;
 `;
 const HeaderTitle = styled.div`
+  width: 100%;
   cursor: pointer;
-  font-size: 19px;
+  font-size: 2.5rem;
   font-weight: bold;
   font-family: auto;
+  font-family: asd;
+  padding-left: 20px;
 `;
 
 const HeaderRigthZone = styled.div`
@@ -33,6 +37,7 @@ const HeaderRigthZone = styled.div`
 `;
 
 const HeaderAdd = styled.div`
+  font-size: 1.5rem;
   cursor: pointer;
   margin-left: 12px;
   &:hover {
@@ -62,15 +67,15 @@ function Header() {
     <>
       <HeaderBlocknone></HeaderBlocknone>
       <HeaderBlock>
+        <HeaderAdd>
+          <VscDiffAdded
+            onClick={() => {
+              navigate("/Upload");
+            }}
+          ></VscDiffAdded>
+        </HeaderAdd>
         <HeaderTitle>Reactstagram</HeaderTitle>
         <HeaderRigthZone>
-          <HeaderAdd>
-            <MdAddCircleOutline
-              onClick={() => {
-                navigate("/Upload");
-              }}
-            ></MdAddCircleOutline>
-          </HeaderAdd>
           <HeaderLike>
             <MdFavoriteBorder></MdFavoriteBorder>
           </HeaderLike>

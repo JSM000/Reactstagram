@@ -14,6 +14,7 @@ export const login = (email, password) => async (dispatch) => {
       type: LOGIN_SUCCESS,
     });
   } catch (e) {
+    alert("올바른 이메일과 비밀번호를 입력해 주세요.");
     throw e;
   }
 };

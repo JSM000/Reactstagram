@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import * as firebaseAuth from "./service/firebaseAuth";
 import { goToMain, goToLogin, logout } from "./modules/auth";
 import { syncProfile } from "./modules/profileDB";
-import ReactLoading from "react-loading";
+import Loading from "./components/pages/Loading";
 import MainBlock from "./components/MainBlock";
 import Header from "./components/Header";
 import BottomTeb from "./components/Footer";
@@ -16,9 +16,6 @@ import Welcome from "./components/pages/Welcome";
 import "./App.css";
 
 const App = () => {
-  const state = useSelector((state) => ({
-    state,
-  }));
   const dispatch = useDispatch();
 
   //전역변수 loading, isLogin관리
@@ -37,38 +34,29 @@ const App = () => {
   const onSyncProfile = useCallback((uid) => {
     dispatch(syncProfile(uid));
   });
-  const Profile = useSelector(({ profileDB }) => profileDB.Profile);
-  console.log(Profile);
 
   //웹 접속시
   // 1. 로그인 여부 파악하여 로그인, 메인 페이지 전환
   // 2. DB에서 해당 UID의 Profile 받아와서 전역 state에 저장
   useEffect(() => {
-    Profile.Uid === null
-      ? firebaseAuth.onAuthChanged(async (user) => {
-          onSyncProfile(user.uid);
-          onGoToMain();
-        })
-      : onGoToMain();
-    // uid
-    //   ? onGoToMain()
-    //   : firebaseAuth.onAuthChanged(async (user) => {
-    //       onGoToMain();
-    //       onSyncProfile(user.uid);
-    //       return;
-    //     });
-    // onGoToLogin();
+    const setInit = () => {
+      firebaseAuth.onAuthChanged(async (user) => {
+        user && (await onSyncProfile(user.uid));
+        user ? onGoToMain() : onGoToLogin();
+      });
+    };
+    setInit();
   }, [firebaseAuth]);
 
   return loading ? (
-    <ReactLoading type="spin" color="black" width="50%" height="50%" />
+    <Loading />
   ) : !isLogin ? (
     <Welcome></Welcome>
   ) : (
     <MainBlock>
       <Header></Header>
       <Routes>
-        <Route path="/" element={<Welcome />} />
+        <Route path="/" element={<Home />} />
         <Route path="/Home" element={<Home />} />
         <Route path="/Upload" element={<Upload />} />
         <Route path="/MyPage" element={<MyPage />} />
