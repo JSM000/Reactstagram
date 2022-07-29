@@ -44,7 +44,7 @@ const Welcome = (props) => {
     <>
       {stage === "Welcome" && (
         <Container>
-          <Title>Instagram</Title>
+          <Title>Reactstagram</Title>
           <CreateBtn onClick={() => setStage("Create")}>
             새 계정 만들기
           </CreateBtn>

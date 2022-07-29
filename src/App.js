@@ -11,19 +11,14 @@ import BottomTeb from "./components/Footer";
 import Home from "./components/pages/Home";
 import MyPage from "./components/pages/MyPage";
 import Upload from "./components/pages/Upload";
-// import About from "./components/pages/About";
-// import Profiles from "./components/pages/Profiles";
 import ProfileEdit from "./components/pages/ProfileEdit";
 import Welcome from "./components/pages/Welcome";
 import "./App.css";
 
 const App = () => {
-  //dispatch(logout());
-
   const state = useSelector((state) => ({
     state,
   }));
-  console.log(state);
   const dispatch = useDispatch();
 
   //전역변수 loading, isLogin관리
@@ -42,18 +37,27 @@ const App = () => {
   const onSyncProfile = useCallback((uid) => {
     dispatch(syncProfile(uid));
   });
+  const Profile = useSelector(({ profileDB }) => profileDB.Profile);
+  console.log(Profile);
 
   //웹 접속시
   // 1. 로그인 여부 파악하여 로그인, 메인 페이지 전환
   // 2. DB에서 해당 UID의 Profile 받아와서 전역 state에 저장
   useEffect(() => {
-    const setInit = () => {
-      firebaseAuth.onAuthChanged(async (user) => {
-        user && (await onSyncProfile(user.uid));
-        user ? onGoToMain() : onGoToLogin();
-      });
-    };
-    setInit();
+    Profile.Uid === null
+      ? firebaseAuth.onAuthChanged(async (user) => {
+          onSyncProfile(user.uid);
+          onGoToMain();
+        })
+      : onGoToMain();
+    // uid
+    //   ? onGoToMain()
+    //   : firebaseAuth.onAuthChanged(async (user) => {
+    //       onGoToMain();
+    //       onSyncProfile(user.uid);
+    //       return;
+    //     });
+    // onGoToLogin();
   }, [firebaseAuth]);
 
   return loading ? (
@@ -66,8 +70,6 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Welcome />} />
         <Route path="/Home" element={<Home />} />
-        {/* <Route path="/about" element={<About />} />
-        <Route path="/Profiles/*" element={<Profiles />} /> */}
         <Route path="/Upload" element={<Upload />} />
         <Route path="/MyPage" element={<MyPage />} />
         <Route path="/ProfileEdit" element={<ProfileEdit />} />

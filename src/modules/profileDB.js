@@ -24,7 +24,11 @@ export const updateProfile = (ref, data) => async (dispatch) => {
   }
 };
 
-const initialState = {};
+const initialState = {
+  Profile: {
+    Uid: null,
+  },
+};
 
 const profileDB = handleActions(
   {
